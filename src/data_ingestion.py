@@ -47,7 +47,7 @@ def preprocess_data(df:pd.DataFrame) -> pd.DataFrame:
         logger.debug("Data preprocess completed")
         return df
     except Exception as e:
-        logger.error("Unexpected error during preprocessing:%s",e)
+        logger.error("Unexpected error during preprocessing: %s",e)
         raise
     
 def save_data(train_data:pd.DataFrame, test_data:pd.DataFrame, data_path:str) ->None:
@@ -57,9 +57,22 @@ def save_data(train_data:pd.DataFrame, test_data:pd.DataFrame, data_path:str) ->
         os.makedirs(raw_data_path, exist_ok=True)
         train_data.to_csv(os.path.join(raw_data_path, 'train.csv'), index=False)
         test_data.to_csv(os.path.join(raw_data_path, 'test.csv'), index=False)
-        logger.debug("Train and Test datasets saved successfully to %s", raw_data_path)
+        logger.debug("Train and Test datasets saved successfully to: %s", raw_data_path)
     except Exception as e:
-        logger.error("Unexpected error occured while saving the data %s", e)
+        logger.error("Unexpected error occured while saving the data: %s", e)
         raise
     
-    
+def main():
+    try:
+        test_size = 0.2
+        data_path = 'https://raw.githubusercontent.com/shubhamkummarrr/MLOps-Loan-Dataset/refs/heads/main/experiments/loan_data.csv'
+        df = load_data(data_url=data_path)
+        final_df = preprocess_data(df)
+        train_data, test_data = train_test_split(final_df, test_size=test_size, random_state=42)
+        save_data(train_data, test_data, data_path='./data')
+    except Exception as e:
+        logger.error('Failed to complete the data_ingestion process: %s',e)
+        print('Error: %s', e) 
+        
+if __name__ == '__main__':
+    main()
